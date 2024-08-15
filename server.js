@@ -35,6 +35,7 @@ const DEFAULT_OPTIONS = {
   aliases: {},          // Aliasing feature
   indexFileName: "index.html", // Allow custom index file name
   useCache: false,      // Use a cache for file contents
+  transformResponse: null, // Allow modifying responses on a case-by-case basis
   messageOnStart: ({ hosts, startupTime, version, options }) => {
     let hostsStr = " started";
     if(Array.isArray(hosts) && hosts.length > 0) {
@@ -436,6 +437,7 @@ class EleventyDevServer {
     }
 
     res.setHeader("Content-Type", contentType);
+    this.options.transformResponse?.(res);
 
     if (contentType.startsWith("text/html")) {
       // the string is important here, wrapResponse expects strings internally for HTML content (for now)

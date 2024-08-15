@@ -342,3 +342,23 @@ test("Standard request does not include range headers", async (t) => {
 
   await server.close();
 });
+
+test("Response transforms can add headers", async (t) => {
+  let server = new EleventyDevServer(
+    "test-server",
+    "./test/stubs/",
+    getOptions({
+      transformResponse: (response) => {
+        response.setHeader("access-control-allow-origin", "*")
+        response.setHeader("x-foo", "y-bar")
+      }
+    })
+  );
+  server.serve(8100);
+
+  let data = await fetchHeadersForRequest(t, server, `/index.html`);
+  t.true(data["access-control-allow-origin"] === "*");
+  t.true(data["x-foo"] === "y-bar");
+
+  await server.close();
+});
